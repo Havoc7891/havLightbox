@@ -1,6 +1,6 @@
 /*!
  * havLightbox v0.1 (https://www.havocspage.net)
- * Copyright 2024 René "Havoc" Nicolaus
+ * Copyright 2024 René Nicolaus
  * Licensed under MIT (https://github.com/Havoc2/havLightbox/blob/main/LICENSE)
  */
 
