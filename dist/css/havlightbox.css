@@ -1,0 +1,141 @@
+/*!
+ * havLightbox v0.1 (https://www.havocspage.net)
+ * Copyright 2024 René "Havoc" Nicolaus
+ * Licensed under MIT (https://github.com/Havoc2/havLightbox/blob/main/LICENSE)
+ */
+
+.havlightbox-gallery {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.havlightbox {
+	background-color: rgba(0, 0, 0, 0); /* Initially transparent */
+	transition: background-color 0.5s ease; /* Transition for background color */
+	cursor: grab;
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 999;
+	padding: 20px;
+	text-align: center;
+}
+
+.havlightbox.open {
+	background-color: rgba(0, 0, 0, 0.75);
+}
+
+.havlightbox.open img {
+	max-height: 100%;
+	max-width: 100%;
+}
+
+.havlightbox-image-container {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.havlightbox img {
+	transition: max-height 0.5s ease-out, max-width 0.5s ease-out;
+	max-height: 0;
+	max-width: 0;
+}
+
+.havlightbox-image-counter {
+	color: #fff;
+	font-size: 16px;
+	position: fixed;
+	top: 10px;
+	left: 10px;
+	z-index: 1000; /* Ensure it's above the box */
+}
+
+.havlightbox-close {
+	cursor: pointer;
+	color: #fff;
+	font-size: 30px;
+	position: fixed;
+	top: 10px;
+	right: 10px;
+}
+
+.havlightbox-close:hover {
+	color: #999;
+}
+
+.havlightbox-caption {
+	color: #fff;
+	font-size: 16px;
+	margin-top: 10px;
+}
+
+.havlightbox-thumbnail {
+	cursor: pointer;
+	margin: 0;
+	height: auto;
+	width: 256px;
+}
+
+.havlightbox-thumbnail-selection {
+	display: flex;
+	justify-content: center;
+	margin-top: 10px;
+}
+
+.havlightbox-thumbnail-selection-item {
+	border: 2px solid transparent;
+	cursor: pointer;
+	opacity: 0; /* Initially hidden */
+	transition: opacity 0.5s ease; /* Transition for opacity */
+	margin: 0 5px;
+	width: 50px;
+	height: 50px;
+}
+
+.havlightbox-thumbnail-selection-item.selected {
+	border-color: #fff;
+}
+
+.havlightbox-thumbnail-selection-item.selected,
+.havlightbox-thumbnail-selection-item:hover {
+	opacity: 1;
+}
+
+.havlightbox-thumbnail-selection-item:not(:hover):not(.selected) {
+	opacity: 0.5; /* Reduce opacity for non-hovered and non-selected items */
+}
+
+.havlightbox-prev-button,
+.havlightbox-next-button {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	background-color: rgba(0, 0, 0, 0.5);
+	color: #fff;
+	border: none;
+	cursor: pointer;
+	padding: 10px;
+	font-size: 18px;
+	display: none; /* Initially hidden */
+}
+
+.havlightbox-prev-button {
+	left: 10px;
+}
+
+.havlightbox-next-button {
+	right: 10px;
+}
+
+.havlightbox-prev-button:hover,
+.havlightbox-next-button:hover {
+	background-color: rgba(0, 0, 0, 0.75);
+	color: #999;
+}
