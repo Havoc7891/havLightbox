@@ -130,4 +130,4 @@ Feel free to suggest features or report issues. However, please note that pull r
 
 Copyright &copy; 2024 Ren&eacute; Nicolaus
 
-This library is released under the [MIT license](/LICENSE).
+This plugin is released under the [MIT license](/LICENSE).
