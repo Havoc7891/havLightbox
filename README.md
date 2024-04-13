@@ -1,6 +1,6 @@
 # havLightbox
 
-Havoc's vanilla JavaScript plugin for displaying images in an overlay box.
+Havoc's Vanilla JavaScript plugin for displaying images in an overlay box.
 
 ## Table of Contents
 
