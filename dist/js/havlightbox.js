@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     havLightboxImageCounter.innerText = '';
 
     setTimeout(() => {
-      havLightboxImg.src = '';
+      havLightboxImg.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
       havLightbox.style.display = 'none';
     }, 500);
   }

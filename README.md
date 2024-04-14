@@ -109,7 +109,7 @@ Here is a complete example:
         <div id="havLightboxImageCounter" class="havlightbox-image-counter"></div>
         <span class="havlightbox-close">&times;</span>
         <div class="havlightbox-image-container">
-            <img src="" alt="havLightbox Image" id="havLightboxImg">
+            <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="havLightbox Image" id="havLightboxImg">
             <div id="havLightboxCaption" class="havlightbox-caption"></div>
             <div id="havLightboxThumbnailSelection" class="havlightbox-thumbnail-selection"></div>
         </div>
