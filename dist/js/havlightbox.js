@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     // Check if essential elements exist
     if (!havLightbox || !havLightboxImgContainer || !havLightboxImg || !havLightboxCaption || !havLightboxImageCounter || !havLightboxThumbnailSelection) {
-      console.error('Essential elements not found in the gallery.');
+      console.error('Essential elements not found for this gallery.');
       return;
     }
 
@@ -99,16 +99,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
       havLightboxCaption.innerText = havLightboxCaptions[havLightboxCurrentImageIndex];
       havLightboxImageCounter.innerText = (havLightboxCurrentImageIndex + 1) + ' / ' + havLightboxImages.length;
 
-      // Update selection highlight for thumbnails
-      document.querySelectorAll('.havlightbox-thumbnail-selection-item').forEach((item, i) => {
-        if (i === havLightboxCurrentImageIndex) {
-          item.classList.add('selected');
-        } else {
-          item.classList.remove('selected');
-        }
-      });
-
-      updateHavLightboxButtons(havLightbox, havLightboxImages, havLightboxCurrentImageIndex);
+      updateHavLightboxThumbnailSelectionItems(havLightboxCurrentImageIndex);
+      updateHavLightboxButtons(havLightbox, havLightboxImages);
     });
 
     havLightboxNextBtn.addEventListener('click', () => {
@@ -121,21 +113,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
       havLightboxCaption.innerText = havLightboxCaptions[havLightboxCurrentImageIndex];
       havLightboxImageCounter.innerText = (havLightboxCurrentImageIndex + 1) + ' / ' + havLightboxImages.length;
 
-      // Update selection highlight for thumbnails
-      document.querySelectorAll('.havlightbox-thumbnail-selection-item').forEach((item, i) => {
-        if (i === havLightboxCurrentImageIndex) {
-          item.classList.add('selected');
-        } else {
-          item.classList.remove('selected');
-        }
-      });
-
-      updateHavLightboxButtons(havLightbox, havLightboxImages, havLightboxCurrentImageIndex);
+      updateHavLightboxThumbnailSelectionItems(havLightboxCurrentImageIndex);
+      updateHavLightboxButtons(havLightbox, havLightboxImages);
     });
 
-    updateHavLightboxImageCount(havLightbox, havLightboxImages);
+    updateHavLightboxImageCounter(havLightbox, havLightboxImages);
     updateHavLightboxThumbnailSelection(havLightbox, havLightboxImages);
-    updateHavLightboxButtons(havLightbox, havLightboxImages, havLightboxCurrentImageIndex);
+    updateHavLightboxButtons(havLightbox, havLightboxImages);
   }
 
   function closeHavLightbox() {
@@ -160,7 +144,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }, 500);
   }
 
-  function updateHavLightboxButtons(havLightbox, havLightboxImages, havLightboxCurrentImageIndex) {
+  function updateHavLightboxButtons(havLightbox, havLightboxImages) {
     var havLightboxPrevBtn = havLightbox.querySelector('.havlightbox-prev-button');
     var havLightboxNextBtn = havLightbox.querySelector('.havlightbox-next-button');
     if (havLightboxImages.length < 2) {
@@ -172,7 +156,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
   }
 
-  function updateHavLightboxImageCount(havLightbox, havLightboxImages) {
+  function updateHavLightboxImageCounter(havLightbox, havLightboxImages) {
     var havLightboxImageCounter = havLightbox.querySelector('.havlightbox-image-counter');
     if (havLightboxImages.length < 2) {
       havLightboxImageCounter.style.display = 'none';
@@ -188,6 +172,17 @@ document.addEventListener('DOMContentLoaded', (event) => {
     } else {
       havLightboxThumbnailSelection.style.display = 'flex';
     }
+  }
+
+  function updateHavLightboxThumbnailSelectionItems(havLightboxCurrentImageIndex) {
+    // Update selection highlight for thumbnails
+    document.querySelectorAll('.havlightbox-thumbnail-selection-item').forEach((item, index) => {
+      if (index === havLightboxCurrentImageIndex) {
+        item.classList.add('selected');
+      } else {
+        item.classList.remove('selected');
+      }
+    });
   }
 
   var havLightboxGalleries = document.querySelectorAll('.havlightbox-gallery');
