@@ -138,6 +138,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
     havLightboxCaption.innerText = '';
     havLightboxImageCounter.innerText = '';
 
+    havLightbox.querySelectorAll('.havlightbox-thumbnail-selection-item').forEach((item) => {
+      item.classList.remove('selected');
+    });
+
     setTimeout(() => {
       havLightboxImg.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
       havLightbox.style.display = 'none';
