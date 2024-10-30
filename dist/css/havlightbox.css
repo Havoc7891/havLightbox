@@ -141,3 +141,11 @@
   background-color: rgba(0, 0, 0, 0.75);
   color: #999;
 }
+
+/* Media query for smaller screens */
+@media all and (max-width: 600px), (max-height: 600px) {
+  .havlightbox-caption,
+  .havlightbox-thumbnail-selection {
+    display: none !important;
+  }
+}
