@@ -1,7 +1,7 @@
 /*!
- * havLightbox v0.1 (https://www.havocspage.net)
- * Copyright 2024 René Nicolaus
- * Licensed under MIT (https://github.com/Havoc2/havLightbox/blob/main/LICENSE)
+ * havLightbox v0.2 (https://www.havocspage.net)
+ * Copyright 2024-2025 René Nicolaus
+ * Licensed under MIT (https://github.com/Havoc7891/havLightbox/blob/main/LICENSE)
  */
 
 document.addEventListener('DOMContentLoaded', (event) => {
@@ -19,10 +19,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
     var havLightboxImg = havLightboxImgContainer.querySelector('img');
     var havLightboxCaption = havLightbox.querySelector('.havlightbox-caption');
     var havLightboxImageCounter = havLightbox.querySelector('.havlightbox-image-counter');
+    var havLightboxCloseButton = havLightbox.querySelector('.havlightbox-close');
     var havLightboxThumbnailSelection = havLightbox.querySelector('.havlightbox-thumbnail-selection');
 
     // Check if essential elements exist
-    if (!havLightbox || !havLightboxImgContainer || !havLightboxImg || !havLightboxCaption || !havLightboxImageCounter || !havLightboxThumbnailSelection) {
+    if (!havLightbox || !havLightboxImgContainer || !havLightboxImg || !havLightboxCaption || !havLightboxImageCounter || !havLightboxCloseButton || !havLightboxThumbnailSelection) {
       console.error('Essential elements not found for this gallery.');
       return;
     }
@@ -45,6 +46,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
       console.error('Image source not found in the images array.');
       return;
     }
+
+    havLightboxCaption.style.display = 'block';
+    havLightboxImageCounter.style.display = 'block';
+    havLightboxCloseButton.style.display = 'block';
 
     havLightbox.style.display = 'block';
     havLightboxImg.src = absoluteImageSource;
@@ -90,32 +95,66 @@ document.addEventListener('DOMContentLoaded', (event) => {
     var havLightboxNextBtn = havLightbox.querySelector('.havlightbox-next-button');
 
     havLightboxPrevBtn.addEventListener('click', () => {
-      --havLightboxCurrentImageIndex;
-      if (havLightboxCurrentImageIndex < 0) {
-        havLightboxCurrentImageIndex = havLightboxImages.length - 1;
-      }
-
-      havLightboxImg.src = havLightboxImages[havLightboxCurrentImageIndex];
-      havLightboxCaption.innerText = havLightboxCaptions[havLightboxCurrentImageIndex];
-      havLightboxImageCounter.innerText = (havLightboxCurrentImageIndex + 1) + ' / ' + havLightboxImages.length;
-
-      updateHavLightboxThumbnailSelectionItems(havLightboxCurrentImageIndex);
-      updateHavLightboxButtons(havLightbox, havLightboxImages);
+      showPreviousImage(true);
     });
 
     havLightboxNextBtn.addEventListener('click', () => {
-      ++havLightboxCurrentImageIndex;
-      if (havLightboxCurrentImageIndex >= havLightboxImages.length) {
-        havLightboxCurrentImageIndex = 0;
-      }
+      showNextImage(true);
+    });
 
+    var startX = 0;
+    var endX = 0;
+
+    havLightbox.addEventListener('touchstart', (event) => {
+      startX = event.changedTouches[0].screenX;
+    });
+
+    havLightbox.addEventListener('touchend', (event) => {
+      endX = event.changedTouches[0].screenX;
+      handleSwipe();
+    });
+
+    function handleSwipe() {
+      var threshold = 50; // Minimum swipe distance in pixels
+      var deltaX = endX - startX;
+      if (Math.abs(deltaX) > threshold) {
+        if (deltaX < 0) {
+          // Swipe left
+          showNextImage();
+        } else {
+          // Swipe right
+          showPreviousImage();
+        }
+      }
+    }
+
+    function showNextImage(wrap = false) {
+      if (havLightboxCurrentImageIndex < havLightboxImages.length - 1) {
+        ++havLightboxCurrentImageIndex;
+        updateHavLightbox();
+      } else if (wrap) {
+        havLightboxCurrentImageIndex = 0;
+        updateHavLightbox();
+      }
+    }
+
+    function showPreviousImage(wrap = false) {
+      if (havLightboxCurrentImageIndex > 0) {
+        --havLightboxCurrentImageIndex;
+        updateHavLightbox();
+      } else if (wrap) {
+        havLightboxCurrentImageIndex = havLightboxImages.length - 1;
+        updateHavLightbox();
+      }
+    }
+
+    function updateHavLightbox() {
       havLightboxImg.src = havLightboxImages[havLightboxCurrentImageIndex];
       havLightboxCaption.innerText = havLightboxCaptions[havLightboxCurrentImageIndex];
       havLightboxImageCounter.innerText = (havLightboxCurrentImageIndex + 1) + ' / ' + havLightboxImages.length;
 
       updateHavLightboxThumbnailSelectionItems(havLightboxCurrentImageIndex);
-      updateHavLightboxButtons(havLightbox, havLightboxImages);
-    });
+    }
 
     updateHavLightboxImageCounter(havLightbox, havLightboxImages);
     updateHavLightboxThumbnailSelection(havLightbox, havLightboxImages);
@@ -127,6 +166,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     var havLightboxImg = havLightbox.querySelector('.havlightbox-image-container img');
     var havLightboxCaption = havLightbox.querySelector('.havlightbox-caption');
     var havLightboxImageCounter = havLightbox.querySelector('.havlightbox-image-counter');
+    var havLightboxCloseButton = havLightbox.querySelector('.havlightbox-close');
 
     havLightbox.classList.remove('open');
 
@@ -137,6 +177,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     havLightboxCaption.innerText = '';
     havLightboxImageCounter.innerText = '';
+
+    havLightboxCaption.style.display = 'none';
+    havLightboxImageCounter.style.display = 'none';
+    havLightboxCloseButton.style.display = 'none';
 
     havLightbox.querySelectorAll('.havlightbox-thumbnail-selection-item').forEach((item) => {
       item.classList.remove('selected');
