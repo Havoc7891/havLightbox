@@ -57,7 +57,8 @@ Create your image galleries like this:
 </div>
 ```
 
-> Note: The *alt* attributes are used as image captions. Adding an empty *alt* attribute will hide the image caption.
+> [!NOTE]
+> The *alt* attributes are used as image captions. Adding an empty *alt* attribute will hide the image caption.
 
 Add the following lines after the galleries:
 
@@ -75,7 +76,8 @@ Add the following lines after the galleries:
 </div>
 ```
 
-> Note: The *style* attribute in the **havLightbox** *div* container is defined to set a custom font that is used by the plugin when opening the overlay box.
+> [!NOTE]
+> The *style* attribute in the **havLightbox** *div* container is defined to set a custom font that is used by the plugin when opening the overlay box.
 
 Here is a complete example:
 
