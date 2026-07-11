@@ -1,6 +1,6 @@
 /*!
- * havLightbox v0.3 (https://havoc.de)
- * Copyright (c) 2024-2025 René Nicolaus
+ * havLightbox v0.4 (https://havoc.de)
+ * Copyright (c) 2024-2026 René Nicolaus
  * Licensed under MIT (https://github.com/Havoc7891/havLightbox/blob/main/LICENSE)
  */
 
@@ -12,7 +12,7 @@
   const havLightboxDefaults = {
     titleFallback: "havlightbox",
     template: `
-<dialog class="havlightbox" id="havlightbox" aria-label="havlightbox">
+<dialog class="havlightbox" id="havlightbox" aria-label="havlightbox" tabindex="-1">
   <div class="havlightbox-backdrop" data-close></div>
   <section class="havlightbox-sheet" role="document">
     <header class="havlightbox-header">
@@ -24,16 +24,16 @@
       </button>
     </header>
     <div class="havlightbox-content">
-      <img id="havlightbox-image" src="" alt="havlightbox image" />
-    </div>
-    <footer class="havlightbox-actions">
-      <button class="icon-btn nav" data-prev aria-label="Previous image">
+      <button class="icon-btn nav nav-prev" type="button" data-prev aria-label="Previous image">
         &lsaquo;
       </button>
-      <div id="havlightbox-caption" class="havlightbox-caption"></div>
-      <button class="icon-btn nav" data-next aria-label="Next image">
+      <img id="havlightbox-image" src="" alt="havlightbox image" />
+      <button class="icon-btn nav nav-next" type="button" data-next aria-label="Next image">
         &rsaquo;
       </button>
+    </div>
+    <footer class="havlightbox-actions">
+      <div id="havlightbox-caption" class="havlightbox-caption"></div>
     </footer>
   </section>
 </dialog>`
@@ -267,21 +267,40 @@
         viewportWidthLimit - sheetPaddingHorizontal - sheetBorderHorizontal
       );
 
-      const actionsStyles = actionsElement
-        ? global.getComputedStyle(actionsElement)
-        : null;
-      const actionsPaddingHorizontal = actionsStyles
-        ? (parseFloat(actionsStyles.paddingLeft || "0") || 0) +
-          (parseFloat(actionsStyles.paddingRight || "0") || 0)
-        : 0;
-      const navPrevWidth = havLightboxNavPrev
-        ? havLightboxNavPrev.getBoundingClientRect().width
-        : 0;
-      const navNextWidth = havLightboxNavNext
-        ? havLightboxNavNext.getBoundingClientRect().width
-        : 0;
+      const imageStyles = global.getComputedStyle(havLightboxImage);
       const minimumBrowserWidth = Math.ceil(
-        actionsPaddingHorizontal + navPrevWidth + navNextWidth
+        parseFloat(imageStyles.minWidth || "0") || 0
+      );
+      const navOutsideGap = 8;
+      const navControlWidth = Math.max(
+        havLightboxNavPrev
+          ? havLightboxNavPrev.getBoundingClientRect().width
+          : 0,
+        havLightboxNavNext
+          ? havLightboxNavNext.getBoundingClientRect().width
+          : 0,
+        40
+      );
+      const navOutsideOffset = Math.ceil(navControlWidth + navOutsideGap);
+      let navImageWidth = naturalWidth;
+      if (clampedWidth > 0) {
+        navImageWidth = clampedWidth;
+      } else if (scaledWidth > 0) {
+        navImageWidth = scaledWidth;
+      }
+      const navSideSpace = Math.max(
+        0,
+        (viewportWidthLimit - navImageWidth) / 2
+      );
+      const canPlaceNavOutside =
+        havLightboxSources.length > 1 && navSideSpace >= navOutsideOffset;
+      havLightboxDialog.classList.toggle(
+        "havlightbox-nav-outside",
+        canPlaceNavOutside
+      );
+      havLightboxSheet.style.setProperty(
+        "--havlightbox-nav-outside-offset",
+        navOutsideOffset + "px"
       );
 
       let browserWidth = 0;
@@ -301,16 +320,13 @@
 
       if (havLightboxSheet) {
         if (isMobileMode) {
-          const actualImageWidth = Math.max(clampedWidth, scaledWidth);
-          const minCaptionWidth = 300;
+          const actualImageWidth = Math.max(
+            clampedWidth,
+            scaledWidth,
+            minimumBrowserWidth
+          );
           const maxAllowedWidth = viewportWidthLimit * 0.95;
-
-          let mobileWidth;
-          if (actualImageWidth >= minCaptionWidth) {
-            mobileWidth = Math.min(actualImageWidth, maxAllowedWidth);
-          } else {
-            mobileWidth = Math.min(minCaptionWidth, maxAllowedWidth);
-          }
+          const mobileWidth = Math.min(actualImageWidth, maxAllowedWidth);
 
           if (mobileWidth > 0) {
             havLightboxSheet.style.setProperty(
@@ -370,6 +386,7 @@
     havLightboxImage.style.removeProperty("width");
     havLightboxImage.style.removeProperty("height");
     havLightboxImage.style.opacity = "0";
+
     if (havLightboxContent) {
       havLightboxContent.classList.add("loading");
     }
@@ -380,15 +397,12 @@
       if (requestId !== havLightboxImageRequestId) {
         return;
       }
-      havLightboxImage.style.opacity = "1";
-      if (havLightboxContent) {
-        havLightboxContent.classList.remove("loading");
-      }
 
       const runLayout = () => {
         if (requestId !== havLightboxImageRequestId) {
           return;
         }
+
         if (
           havLightboxImage.naturalWidth > 0 &&
           havLightboxImage.naturalHeight > 0
@@ -397,7 +411,18 @@
             if (requestId !== havLightboxImageRequestId) {
               return;
             }
+
             havLightboxUpdateLayout();
+
+            global.requestAnimationFrame(() => {
+              if (requestId !== havLightboxImageRequestId) {
+                return;
+              }
+              havLightboxImage.style.opacity = "1";
+              if (havLightboxContent) {
+                havLightboxContent.classList.remove("loading");
+              }
+            });
           });
         } else {
           global.requestAnimationFrame(runLayout);
@@ -411,6 +436,7 @@
             if (requestId !== havLightboxImageRequestId) {
               return;
             }
+
             if (
               havLightboxImage.naturalWidth > 0 &&
               havLightboxImage.naturalHeight > 0
@@ -487,6 +513,15 @@
       return;
     }
 
+    if (
+      event.key === "Tab" &&
+      !event.metaKey &&
+      !event.ctrlKey &&
+      !event.altKey
+    ) {
+      havLightboxDialog.classList.add("havlightbox-keyboard-focus");
+    }
+
     if (event.key === "ArrowLeft") {
       event.preventDefault();
       havLightboxNavigatePrevious();
@@ -500,6 +535,8 @@
     if (!havLightboxDialog || !havLightboxDialog.open) {
       return;
     }
+
+    havLightboxDialog.classList.remove("havlightbox-keyboard-focus");
 
     const touch = event.touches[0];
     havLightboxTouchStartX = touch.clientX;
@@ -600,7 +637,16 @@
       havLightboxDoc.body.classList.add("havlightbox-open");
     }
 
+    havLightboxDialog.classList.remove("havlightbox-keyboard-focus");
+    havLightboxDialog.classList.remove("havlightbox-nav-outside");
+
     havLightboxDialog.showModal();
+
+    try {
+      havLightboxDialog.focus({ preventScroll: true });
+    } catch (_) {
+      havLightboxDialog.focus();
+    }
   }
 
   function havLightboxInit(options = {}) {
@@ -617,6 +663,10 @@
     havLightboxOptions = { ...havLightboxDefaults, ...options };
 
     havLightboxDialog = havLightboxEnsureDialog(doc, havLightboxOptions);
+    if (!havLightboxDialog.hasAttribute("tabindex")) {
+      havLightboxDialog.tabIndex = -1;
+    }
+
     const qs = (sel, root = doc) => root.querySelector(sel);
 
     havLightboxImage = qs("#havlightbox-image", havLightboxDialog);
@@ -639,6 +689,10 @@
       havLightboxBackdrop.addEventListener("click", havLightboxClose);
     }
 
+    havLightboxDialog.addEventListener("pointerdown", () => {
+      havLightboxDialog.classList.remove("havlightbox-keyboard-focus");
+    });
+
     havLightboxDialog.addEventListener("cancel", (event) => {
       event.preventDefault();
       havLightboxClose();
@@ -646,6 +700,8 @@
 
     havLightboxDialog.addEventListener("close", () => {
       havLightboxDialog.classList.remove("closing");
+      havLightboxDialog.classList.remove("havlightbox-keyboard-focus");
+      havLightboxDialog.classList.remove("havlightbox-nav-outside");
       if (havLightboxDoc?.body) {
         havLightboxDoc.body.classList.remove("havlightbox-open");
         havLightboxDoc.body.style.removeProperty("--sbw");
