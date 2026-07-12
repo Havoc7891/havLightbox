@@ -1,1 +1,6 @@
-dist/** linguist-vendored=false
+# Show diffs and include them in language statistics
+dist/** -linguist-generated -linguist-vendored
+
+# Hide diffs and exclude them from language statistics
+dist/js/*.min.js   linguist-generated
+dist/css/*.min.css linguist-generated
